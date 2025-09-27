@@ -245,12 +245,12 @@ maps.global = [
     callback: () =>
       actions.openLink(actions.getWappalyzerUrl(), { newTab: true }),
   },
-  {
-    alias: ";pd",
-    category: categories.misc,
-    description: "Toggle PDF viewer from SurfingKeys",
-    callback: actions.togglePdfViewer,
-  },
+  // {
+  //   alias: ";pd",
+  //   category: categories.misc,
+  //   description: "Toggle PDF viewer from SurfingKeys",
+  //   callback: actions.togglePdfViewer,
+  // },
   {
     alias: "gxE",
     map: "gxt",

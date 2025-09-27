@@ -69,11 +69,11 @@ const localStorageFns = () => {
   if (typeof browser !== "undefined") {
     return [browser.storage.local.get, browser.storage.local.set]
   }
-  if (typeof chrome !== "undefined") {
-    return [chrome.storage.local.get, chrome.storage.local.set].map((fn) =>
-      util.promisify(fn.bind(chrome.storage.local))
-    )
-  }
+  // if (typeof chrome !== "undefined") {
+  //   return [chrome.storage.local.get, chrome.storage.local.set].map((fn) =>
+  //     util.promisify(fn.bind(chrome.storage.local))
+  //   )
+  // }
   const fn = () =>
     new Error("local storage unavailable: unsupported environment")
   return [fn, fn]
