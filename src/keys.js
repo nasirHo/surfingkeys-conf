@@ -8,6 +8,13 @@ const { categories } = help
 
 const { Clipboard, Front, Hints } = api
 
+const isValidUrl = (urlString) => {
+  try {
+    return Boolean(new URL(urlString))
+  } catch (e) {
+    return false
+  }
+}
 // Remove undesired default mappings
 const unmaps = {
   mappings: [
@@ -50,6 +57,66 @@ const maps = {}
 
 maps.global = [
   {
+    alias: "O",
+    map: "t",
+    category: categories.omnibar,
+    description: "Open a URL on non-active tab",
+  },
+  {
+    alias: "oo",
+    map: "go",
+    category: categories.omnibar,
+    description: "Open a URL on current tab",
+  },
+  {
+    alias: "t",
+    map: "on",
+    category: categories.tabs,
+    description: "Open newtab",
+  },
+  {
+    alias: "J",
+    map: "R",
+    category: categories.tabs,
+    description: "Go one tab right",
+  },
+  {
+    alias: "K",
+    map: "E",
+    category: categories.tabs,
+    description: "Go one tab left",
+  },
+  {
+    alias: "gxJ",
+    map: "gxR",
+    category: categories.tabs,
+    description: "close tab on right",
+  },
+  {
+    alias: "gxK",
+    map: "gxE",
+    category: categories.tabs,
+    description: "close tab on left",
+  },
+  {
+    alias: "H",
+    map: "S",
+    category: categories.pageNav,
+    description: "Go back in history",
+  },
+  {
+    alias: "L",
+    map: "D",
+    category: categories.pageNav,
+    description: "Go forward in history",
+  },
+  {
+    alias: "<Alt-f>",
+    map: "cf",
+    category: categories.mouseClick,
+    description: "Open multile links in new tabs",
+  },
+  {
     alias: "F",
     map: "gf",
     category: categories.mouseClick,
@@ -62,28 +129,10 @@ maps.global = [
     callback: actions.previewLink,
   },
   {
-    alias: "w",
-    map: "k",
-    category: categories.scroll,
-    description: "Scroll up",
-  },
-  {
-    alias: "s",
-    map: "j",
-    category: categories.scroll,
-    description: "Scroll down",
-  },
-  {
-    alias: "K",
+    alias: "u",
     map: "e",
     category: categories.scroll,
     description: "Scroll half page up",
-  },
-  {
-    alias: "J",
-    map: "d",
-    category: categories.scroll,
-    description: "Scroll half page down",
   },
   {
     alias: "gh",
@@ -92,7 +141,7 @@ maps.global = [
     callback: actions.scrollToHash,
   },
   {
-    alias: "gi",
+    alias: "gl",
     category: categories.pageNav,
     description: "Edit current URL with vim editor",
     callback: actions.vimEditURL,
@@ -104,7 +153,7 @@ maps.global = [
     callback: () => util.createHints("img", (i) => actions.openLink(i.src)),
   },
   {
-    alias: "g.",
+    alias: "gp",
     category: categories.pageNav,
     description: "Go to parent domain",
     callback: () => {
@@ -116,7 +165,38 @@ maps.global = [
     },
   },
   {
-    alias: "yp",
+    alias: "p",
+    category: categories.clipboard,
+    description: "Open the clipboard's URL in the current tab",
+    callback: () => {
+      Clipboard.read(function (response) {
+        if (isValidUrl(response.data)){
+          window.location.href = response.data
+        }
+        else{
+          window.location.href = `https:////www.google.com//search?q=${response.data}`
+        }
+      })
+    },
+  },
+  {
+    alias: "P",
+    // map: "cc",
+    category: categories.clipboard,
+    description: "Open the clipboard's URL in the non-active new tab",
+    callback: () => {
+      Clipboard.read(function (response) {
+        if (isValidUrl(response.data)){
+          actions.openLink(response.data, { newTab:true, active:false })
+        }
+        else{
+          actions.openLink( `https:////www.google.com//search?q=${response.data}`, { newTab:true, active:false })
+        }
+      })
+    },
+  },
+  {
+    alias: "yy",
     category: categories.clipboard,
     description: "Copy URL path of current page",
     callback: () => Clipboard.write(window.location.href),
@@ -133,7 +213,7 @@ maps.global = [
     description: "Copy link as Markdown",
     callback: () =>
       util.createHints("a[href]", (a) =>
-        Clipboard.write(`[${a.innerText}](${a.href})`)
+        Clipboard.write(`[${a.innerText}](${a.href})`),
       ),
   },
   {
@@ -143,18 +223,25 @@ maps.global = [
     callback: () => Clipboard.write(actions.getOrgLink()),
   },
   {
-    alias: "yM",
+    alias: "ym",
     category: categories.clipboard,
     description: "Copy page URL/Title as Markdown link",
     callback: () => Clipboard.write(actions.getMarkdownLink()),
   },
   {
-    alias: "yT",
+    alias: "yt",
     category: categories.tabs,
     description: "Duplicate current tab (non-active new tab)",
     callback: () =>
       actions.openLink(window.location.href, { newTab: true, active: false }),
   },
+  // {
+  //   alias: "yf",
+  //   map: "ya",
+  //   category: categories.omnibar,
+  //   description: "Copy a link URL to the clipboard",
+  // },
+
   // TODO
   // {
   //   alias:       "yx",
@@ -274,12 +361,6 @@ maps.global = [
     },
   },
   {
-    alias: "F",
-    map: "gf",
-    category: categories.mouseClick,
-    description: "Open a link in non-active new tab",
-  },
-  {
     alias: "oh",
     category: categories.omnibar,
     description: "Open URL from history",
@@ -362,21 +443,13 @@ maps["www.google.com"] = [
     callback: () =>
       util.createHints(
         googleSearchResultSelector,
-        actions.openAnchor({ newTab: true, active: false })
+        actions.openAnchor({ newTab: true, active: false }),
       ),
   },
   {
     alias: "d",
     description: "Open search in DuckDuckGo",
     callback: actions.go.ddg,
-  },
-]
-
-maps["algolia.com"] = [
-  {
-    alias: "a",
-    description: "Open search result",
-    callback: () => util.createHints(".item-main h2>a:first-child"),
   },
 ]
 
@@ -399,7 +472,7 @@ maps["duckduckgo.com"] = [
     callback: () =>
       util.createHints(
         ddgSelector,
-        actions.openAnchor({ newTab: true, active: false })
+        actions.openAnchor({ newTab: true, active: false }),
       ),
   },
   {
@@ -441,7 +514,7 @@ maps["youtube.com"] = [
     callback: () =>
       util.createHints(
         "*[id='video-title']",
-        actions.openAnchor({ newTab: true })
+        actions.openAnchor({ newTab: true }),
       ),
   },
   {
@@ -465,7 +538,7 @@ maps["youtube.com"] = [
       actions.dispatchMouseEvents(
         document.querySelector("#movie_player .ytp-fullscreen-button"),
         "mousedown",
-        "click"
+        "click",
       ),
   },
   {
@@ -480,14 +553,6 @@ maps["youtube.com"] = [
     description: "Copy YouTube video markdown link for current time",
     callback: () =>
       Clipboard.write(actions.yt.getCurrentTimestampMarkdownLink()),
-  },
-]
-
-maps["vimeo.com"] = [
-  {
-    alias: "F",
-    description: "Toggle fullscreen",
-    callback: () => document.querySelector(".fullscreen-icon").click(),
   },
 ]
 
@@ -728,7 +793,7 @@ maps["twitter.com"] = [
     callback: () =>
       document
         .querySelector(
-          "a[role='button'][data-testid='SideNav_NewTweet_Button']"
+          "a[role='button'][data-testid='SideNav_NewTweet_Button']",
         )
         .click(),
   },
@@ -742,24 +807,10 @@ maps["twitter.com"] = [
     description: "Goto tweet",
     callback: () =>
       util.createHints(
-        "article, article div[data-focusable='true'][role='link'][tabindex='0']"
+        "article, article div[data-focusable='true'][role='link'][tabindex='0']",
       ),
   },
 ]
-
-maps["bsky.app"] = [
-  {
-    alias: "d",
-    description: "Copy user DID",
-    callback: actions.by.copyDID,
-  },
-  {
-    alias: "p",
-    description: "Copy user post ID",
-    callback: actions.by.copyPostID,
-  },
-]
-
 
 maps["reddit.com"] = [
   {
@@ -798,7 +849,7 @@ maps["reddit.com"] = [
     callback: () =>
       util.createHints(
         ".title",
-        actions.openAnchor({ newTab: true, active: false })
+        actions.openAnchor({ newTab: true, active: false }),
       ),
   },
   {
@@ -812,7 +863,7 @@ maps["reddit.com"] = [
     callback: () =>
       util.createHints(
         ".comments",
-        actions.openAnchor({ newTab: true, active: false })
+        actions.openAnchor({ newTab: true, active: false }),
       ),
   },
 ]
@@ -859,7 +910,7 @@ maps["news.ycombinator.com"] = [
     callback: () =>
       util.createHints(
         ".subline>a[href^='item']",
-        actions.openAnchor({ newTab: true, active: false })
+        actions.openAnchor({ newTab: true, active: false }),
       ),
   },
   {
@@ -887,67 +938,6 @@ maps["news.ycombinator.com"] = [
   },
 ]
 
-maps["producthunt.com"] = [
-  {
-    alias: "a",
-    description: "View product (external)",
-    callback: actions.ph.openExternal,
-  },
-  {
-    alias: "v",
-    description: "View product",
-    callback: () =>
-      util.createHints(
-        "ul[class^='postsList_'] > li > div[class^='item_'] > a"
-      ),
-  },
-  {
-    alias: "s",
-    description: "Upvote product",
-    callback: () => util.createHints("button[data-test='vote-button']"),
-  },
-]
-
-maps["behance.net"] = [
-  {
-    alias: "s",
-    description: "Appreciate project",
-    callback: () => util.createHints(".appreciation-button"),
-  },
-  {
-    alias: "b",
-    description: "Add project to collection",
-    callback: () => document.querySelector(".qa-action-collection").click(),
-  },
-  {
-    alias: "a",
-    description: "View project",
-    callback: () => util.createHints(".rf-project-cover__title"),
-  },
-  {
-    alias: "A",
-    description: "View project (non-active new tab)",
-    callback: () =>
-      util.createHints(
-        ".rf-project-cover__title",
-        actions.openAnchor({ newTab: true, active: false })
-      ),
-  },
-]
-
-maps["fonts.adobe.com"] = [
-  {
-    alias: "a",
-    description: "Activate font",
-    callback: () => util.createHints(".spectrum-ToggleSwitch-input"),
-  },
-  {
-    alias: "s",
-    description: "Favorite font",
-    callback: () => util.createHints(".favorite-toggle-icon"),
-  },
-]
-
 maps["wikipedia.org"] = [
   {
     alias: "s",
@@ -959,7 +949,7 @@ maps["wikipedia.org"] = [
     description: "View page",
     callback: () =>
       util.createHints(
-        "#bodyContent :not(sup):not(.mw-editsection) > a:not([rel=nofollow])"
+        "#bodyContent :not(sup):not(.mw-editsection) > a:not([rel=nofollow])",
       ),
   },
   {
@@ -976,14 +966,6 @@ maps["wikipedia.org"] = [
     alias: "R",
     description: "View WikiRank for current article",
     callback: actions.wp.viewWikiRank,
-  },
-]
-
-maps["craigslist.org"] = [
-  {
-    alias: "a",
-    description: "View listing",
-    callback: () => util.createHints("a.result-title"),
   },
 ]
 
@@ -1295,7 +1277,12 @@ maps["chatgpt.com"] = [
     alias: "i",
     leader: "",
     description: "Focus input",
-    callback: () => setTimeout(() => Hints.dispatchMouseClick(document.querySelector("#prompt-textarea")), 0),
+    callback: () =>
+      setTimeout(
+        () =>
+          Hints.dispatchMouseClick(document.querySelector("#prompt-textarea")),
+        0,
+      ),
   },
 ]
 
@@ -1304,7 +1291,16 @@ maps["claude.ai"] = [
     alias: "i",
     leader: "",
     description: "Focus input",
-    callback: () => setTimeout(() => Hints.dispatchMouseClick(document.querySelector(".ProseMirror[contenteditable=true]")), 0),
+    callback: () =>
+      setTimeout(
+        () =>
+          Hints.dispatchMouseClick(
+            document.querySelector(".ProseMirror[contenteditable=true]"),
+          ),
+        0,
+      ),
+  },
+]
 
 const cmaps = [
   {
@@ -1323,7 +1319,7 @@ const cmaps = [
 
 const registerDOI = (
   domain,
-  provider = actions.doi.providers.meta_citation_doi
+  provider = actions.doi.providers.meta_citation_doi,
 ) => {
   if (!maps[domain]) {
     maps[domain] = []
@@ -1352,7 +1348,7 @@ if (priv.doi_handler) {
   registerDOI("apa.org", () =>
     document
       .querySelector(".citation a")
-      ?.innerText?.replace(/^https:\/\/doi\.org\//, "")
+      ?.innerText?.replace(/^https:\/\/doi\.org\//, ""),
   )
   registerDOI("ashpublications.org")
   registerDOI("asnjournals.org")
@@ -1369,7 +1365,7 @@ if (priv.doi_handler) {
   registerDOI("elifesciences.org", () =>
     document
       .querySelector("meta[name='dc.identifier']")
-      ?.content?.replace(/^doi:/, "")
+      ?.content?.replace(/^doi:/, ""),
   )
   registerDOI("embopress.org")
   registerDOI("emerald.com", actions.doi.providers.meta_dcIdentifier_doi)
@@ -1382,12 +1378,12 @@ if (priv.doi_handler) {
   registerDOI("go.gale.com")
   registerDOI(
     "ieee.org",
-    () => document.querySelector(".stats-document-abstract-doi a")?.innerText
+    () => document.querySelector(".stats-document-abstract-doi a")?.innerText,
   )
   registerDOI("ingentaconnect.com", () =>
     document
       .querySelector("meta[name='DC.identifier']")
-      ?.content?.replace(/^info:doi\//, "")
+      ?.content?.replace(/^info:doi\//, ""),
   )
   registerDOI("jacc.or", actions.doi.providers.meta_dcIdentifier_doi)
   registerDOI("jamanetwork.com")
@@ -1398,16 +1394,16 @@ if (priv.doi_handler) {
   registerDOI("journals.lww.com")
   registerDOI(
     "journals.physiology.org",
-    actions.doi.providers.meta_dcIdentifier_doi
+    actions.doi.providers.meta_dcIdentifier_doi,
   )
   registerDOI("journals.plos.org")
   registerDOI(
     "journals.sagepub.com",
-    actions.doi.providers.meta_dcIdentifier_doi
+    actions.doi.providers.meta_dcIdentifier_doi,
   )
   registerDOI(
     "journals.uchicago.edu",
-    actions.doi.providers.meta_dcIdentifier_doi
+    actions.doi.providers.meta_dcIdentifier_doi,
   )
   registerDOI("jst.go.jp")
   registerDOI("karger.com")
@@ -1417,7 +1413,7 @@ if (priv.doi_handler) {
   registerDOI("mdpi.com")
   registerDOI(
     "msp.org",
-    () => document.querySelector(".paper-doi a")?.innerText
+    () => document.querySelector(".paper-doi a")?.innerText,
   )
   registerDOI("nature.com")
   registerDOI("nejm.org", actions.doi.providers.meta_dcIdentifier_doi)
@@ -1433,7 +1429,7 @@ if (priv.doi_handler) {
   registerDOI("research.manchester.ac.uk")
   registerDOI(
     "royalsocietypublishing.org",
-    actions.doi.providers.meta_dcIdentifier_doi
+    actions.doi.providers.meta_dcIdentifier_doi,
   )
   registerDOI("rupress.org")
   registerDOI("science.org", actions.doi.providers.meta_dcIdentifier_doi)
@@ -1447,7 +1443,7 @@ if (priv.doi_handler) {
   registerDOI("thelancet.com")
   registerDOI(
     "worldscientific.com",
-    actions.doi.providers.meta_dcIdentifier_doi
+    actions.doi.providers.meta_dcIdentifier_doi,
   )
 }
 
