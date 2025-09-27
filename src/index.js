@@ -7,6 +7,7 @@ const {
   mapkey,
   map,
   unmap,
+  cmap,
   Clipboard,
   Front,
   removeSearchAlias,
@@ -129,6 +130,10 @@ const main = async () => {
     const { keys } = conf
     const { maps, aliases = {} } = keys
     registerKeys(maps, aliases, conf.siteleader)
+  }
+
+  if (conf.keys && conf.keys.cmaps) {
+    conf.keys.cmaps.forEach((c) => cmap(c.alias, c.map))
   }
 }
 

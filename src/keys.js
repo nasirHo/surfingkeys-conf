@@ -1305,6 +1305,19 @@ maps["claude.ai"] = [
     leader: "",
     description: "Focus input",
     callback: () => setTimeout(() => Hints.dispatchMouseClick(document.querySelector(".ProseMirror[contenteditable=true]")), 0),
+
+const cmaps = [
+  {
+    alias: "<Alt-j>",
+    map: "<Ctrl-j>",
+  },
+  {
+    alias: "<Ctrl-j>",
+    map: "<Tab>",
+  },
+  {
+    alias: "<Ctrl-k>",
+    map: "<Shift-Tab>",
   },
 ]
 
@@ -1470,4 +1483,5 @@ export default {
   unmaps,
   maps,
   aliases,
+  cmaps,
 }
