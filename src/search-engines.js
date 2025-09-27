@@ -1410,4 +1410,27 @@ completions.rr.callback = (response) => {
   })
 }
 
+// Javdb all
+completions.jav = {
+  alias: "jav",
+  name: "JavDB",
+  search: "https://javdb.com/search?f=all&q=",
+  favicon: "https://javdb.com/favicon.ico",
+}
+
+// Javdb actor
+completions.jaa = {
+  alias: "jaa",
+  name: "JavDB Actor",
+  search: "https://javdb.com/search?f=actor&q=",
+  favicon: "https://javdb.com/favicon.ico",
+}
+
+// sukebei nyaa
+completions.nyaa = {
+  alias: "nyaa",
+  name: "sukebei nyaa",
+  search: "https://sukebei.nyaa.si/?f=0&c=0_0&q=",
+  favicon: "https://sukebei.nyaa.si/static/favicon.png",
+}
 export default completions
