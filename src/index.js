@@ -8,6 +8,7 @@ const {
   map,
   unmap,
   cmap,
+  Hints,
   Clipboard,
   Front,
   removeSearchAlias,
@@ -102,6 +103,8 @@ const main = async () => {
     )
   }
 
+  if (conf.hintCharacters) {
+    api.Hints.setCharacters(conf.hintCharacters);
   }
 
   // if (conf.logLevels) {
