@@ -47,16 +47,15 @@ const registerKey = (domain, mapObj, siteleader) => {
 }
 
 const registerKeys = (maps, aliases, siteleader) => {
-  const hydratedAliases = Object.entries(
-    aliases
-  ).flatMap(([baseDomain, aliasDomains]) =>
-    aliasDomains.flatMap((a) => ({ [a]: maps[baseDomain] }))
+  const hydratedAliases = Object.entries(aliases).flatMap(
+    ([baseDomain, aliasDomains]) =>
+      aliasDomains.flatMap((a) => ({ [a]: maps[baseDomain] })),
   )
 
   const mapsAndAliases = Object.assign({}, maps, ...hydratedAliases)
 
   Object.entries(mapsAndAliases).forEach(([domain, domainMaps]) =>
-    domainMaps.forEach((mapObj) => registerKey(domain, mapObj, siteleader))
+    domainMaps.forEach((mapObj) => registerKey(domain, mapObj, siteleader)),
   )
 }
 
@@ -74,10 +73,10 @@ const registerSearchEngines = (searchEngines, searchleader) =>
       s.compl,
       s.callback,
       undefined,
-      options
+      options,
     )
     mapkey(`${searchleader}${s.alias}`, `#8Search ${s.name}`, () =>
-      Front.openOmnibar({ type: "SearchEngine", extra: s.alias })
+      Front.openOmnibar({ type: "SearchEngine", extra: s.alias }),
     )
     mapkey(
       `c${searchleader}${s.alias}`,
@@ -90,7 +89,7 @@ const registerSearchEngines = (searchEngines, searchleader) =>
             extra: s.alias,
           })
         })
-      }
+      },
     )
   })
 
@@ -99,7 +98,7 @@ const main = async () => {
   if (conf.settings) {
     Object.assign(
       settings,
-      typeof conf.settings === "function" ? conf.settings() : conf.settings
+      typeof conf.settings === "function" ? conf.settings() : conf.settings,
     )
   }
 
